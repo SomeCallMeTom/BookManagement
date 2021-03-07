@@ -5,7 +5,7 @@ Parameters:
   EnvironmentName:
     Description: An environment name that is prefixed to resource names
     Type: String
-    Default: user-management-vpc
+    Default: book-management-vpc
 
   VpcCIDR:
     Description: Please enter the IP range (CIDR notation) for this VPC

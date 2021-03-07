@@ -1,4 +1,4 @@
-Description: This template is to build the webserver for usermanagement
+Description: This template is to build the webserver for book management
 
 Parameters:
   Stage:
@@ -13,7 +13,7 @@ Parameters:
   KeyName:
     Description: Name of AWS key to use
     Type: String
-    Default: user-management-key
+    Default: book-management-key
 
 Resources:
   WebServerNode1:
@@ -22,7 +22,7 @@ Resources:
         InstanceType: !Ref InstanceType
         ImageId: ami-0b898040803850657
         KeyName: !Ref KeyName
-        IamInstanceProfile: !ImportValue user-management-security-WebEC2InstanceProfile
+        IamInstanceProfile: !ImportValue book-management-security-WebEC2InstanceProfile
         UserData: 
             Fn::Base64: 
              
@@ -42,12 +42,12 @@ Resources:
                     ./install auto
 
         SecurityGroupIds:
-          - !ImportValue user-management-security-WebServerSecurityGroupId
-        SubnetId: !ImportValue user-management-vpc-PublicSubnet1
+          - !ImportValue book-management-security-WebServerSecurityGroupId
+        SubnetId: !ImportValue book-management-vpc-PublicSubnet1
         Tags: 
           - 
             Key: "Name"
-            Value: !Join [ "-", [user-management-web, !Ref Stage ]]
+            Value: !Join [ "-", [book-management-web, !Ref Stage ]]
 Outputs:
   WebServerURL:
     Description: "URL to access our Tomcat Server"
