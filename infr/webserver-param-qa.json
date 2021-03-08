@@ -1,0 +1,7 @@
+{
+    "Parameters" : {
+        "KeyName" : "book-management-key",
+        "Stage" : "qa",
+        "InstanceType" : "t2.micro"
+    }
+}
