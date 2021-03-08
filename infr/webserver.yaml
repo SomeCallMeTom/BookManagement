@@ -4,7 +4,6 @@ Parameters:
   Stage:
     Description: The environment to which this will be deployed
     Type: String
-    Default: dev
   InstanceType:
     Description: The AWS Type of the webserver
     Type: String
