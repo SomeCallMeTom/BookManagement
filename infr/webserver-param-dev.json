@@ -1,0 +1,7 @@
+{
+    "Parameters" : {
+        "KeyName" : "user-management-key",
+        "Stage" : "dev",
+        "InstanceType" : "t2.micro"
+    }
+}

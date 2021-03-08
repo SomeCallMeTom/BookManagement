@@ -1,0 +1,17 @@
+{
+    "recommendations": [
+        "mark-tucker.aws-cli-configure",
+        "amazonwebservices.aws-toolkit-vscode",
+        "kddejong.vscode-cfn-lint",
+        "vscjava.vscode-java-debug",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-java-test",
+        "vscjava.vscode-maven",
+        "vscjava.vscode-java-dependency",
+        "redhat.java",
+        "redhat.vscode-yaml",
+        "redhat.vscode-xml",
+        "visualstudioexptteam.vscodeintellicode",
+        "adashen.vscode-tomcat"
+    ]
+}

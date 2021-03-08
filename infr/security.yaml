@@ -1,0 +1,57 @@
+Description: template for security groups in book-management-vpc
+
+Resources:
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+        GroupDescription: Allow http to client host
+        VpcId: !ImportValue book-management-vpc 
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+    
+  WebEC2InstanceRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - 
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+
+  WebEC2InstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+        - 
+          Ref: "WebEC2InstanceRole"
+
+Outputs:
+  WebServerSecurityGroupId:
+    Description: "Web Server Security Group ID"
+    Value: !GetAtt WebServerSecurityGroup.GroupId
+    Export:
+      Name: !Sub "${AWS::StackName}-WebServerSecurityGroupId"
+
+
+  WebEC2InstanceProfile:
+    Description: "Web Server Security Profile"
+    Value: !Ref WebEC2InstanceProfile
+    Export:
+      Name: !Sub "${AWS::StackName}-WebEC2InstanceProfile"
