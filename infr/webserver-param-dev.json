@@ -1,6 +1,6 @@
 {
     "Parameters" : {
-        "KeyName" : "user-management-key",
+        "KeyName" : "book-management-key",
         "Stage" : "dev",
         "InstanceType" : "t2.micro"
     }
