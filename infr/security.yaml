@@ -42,6 +42,17 @@ Resources:
         - 
           Ref: "WebEC2InstanceRole"
 
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+        GroupDescription: Allow SQL access to the DB
+        VpcId: !ImportValue user-management-vpc
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !GetAtt WebServerSecurityGroup.GroupId
+
 Outputs:
   WebServerSecurityGroupId:
     Description: "Web Server Security Group ID"
@@ -49,9 +60,14 @@ Outputs:
     Export:
       Name: !Sub "${AWS::StackName}-WebServerSecurityGroupId"
 
-
   WebEC2InstanceProfile:
     Description: "Web Server Security Profile"
     Value: !Ref WebEC2InstanceProfile
     Export:
       Name: !Sub "${AWS::StackName}-WebEC2InstanceProfile"
+
+  DBSecurityGroup:
+    Description: "DB Security Group ID"
+    Value: !Ref DBSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-DBSecurityGroup"
