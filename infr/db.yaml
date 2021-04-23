@@ -36,4 +36,4 @@ Outputs:
     Description: A reference to the private subnet in the 2nd Availability Zone
     Value: !GetAtt DatabaseInstance.Endpoint.Address 
     Export: 
-      Name: !Sub "${Stage}-DBURL"
+      Name: !Sub "${Stage}-BookDBURL"
