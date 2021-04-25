@@ -1,0 +1,7 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/aws-cloudformation/cfn-python-lint
+    rev: v0.48.3 # The version of cfn-lint to use
+    hooks:
+      - id: cfn-python-lint
+        files: infr/.*\.(yml|yaml)$
