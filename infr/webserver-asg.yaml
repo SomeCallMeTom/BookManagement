@@ -1,0 +1,94 @@
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+  KeyName:
+    Description: Name of AWS key to use
+    Type: String
+    Default: book-management-key
+  InstanceType:
+    Type: String
+    Default: t2.micro
+  MinSize:
+    Type: String
+    Default: 1
+  MaxSize:
+    Type: String
+    Default: 2
+  DesiredCapacity:
+    Type: String
+    Default: 1
+Resources:
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Sub ${AWS::StackName}-launch-template
+      LaunchTemplateData:
+        ImageId: ami-0b898040803850657
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile:
+          Arn: !ImportValue book-management-security-WebEC2InstanceProfileArn
+        KeyName: !Ref KeyName
+        SecurityGroupIds:
+          - !ImportValue book-management-security-WebServerSecurityGroupId
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash             
+                yum update -y
+                yum install -y tomcat
+                yum install -y tomcat-webapps
+                yum install -y tomcat-admin-webapps
+                echo Stage="${Stage}" >> /usr/share/tomcat/conf/tomcat.conf
+                aws s3api get-object --bucket tomcat-config-td --key tomcat-users.xml /usr/share/tomcat/conf/tomcat-users.xml
+                service tomcat start
+                systemctl enable tomcat.service
+                yum install -y ruby
+                aws s3 cp s3://aws-codedeploy-us-east-1/latest/install . --region us-east-1
+                chmod +x ./install
+                ./install auto
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      LoadBalancerName: !Join ["-", ["book-management-lb", !Ref Stage]]
+      Subnets:
+        - !ImportValue book-management-vpc-PublicSubnet1
+        - !ImportValue book-management-vpc-PublicSubnet2
+      SecurityGroups:
+        - !ImportValue book-management-security-WebServerSecurityGroupId
+      Listeners:
+        - LoadBalancerPort: "80"
+          InstancePort: "8080"
+          Protocol: HTTP
+      HealthCheck:
+        Target: HTTP:8080/
+        HealthyThreshold: "3"
+        UnhealthyThreshold: "5"
+        Interval: "30"
+        Timeout: "5"
+
+  WebServerASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Join ["-", ["book-management-web", !Ref Stage]]
+      MinSize: !Ref MinSize
+      MaxSize: !Ref MaxSize
+      DesiredCapacity: !Ref DesiredCapacity
+      HealthCheckGracePeriod: 300
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      LoadBalancerNames:
+        - !Ref LoadBalancer
+      VPCZoneIdentifier:
+        - !ImportValue book-management-vpc-PublicSubnet1
+        - !ImportValue book-management-vpc-PublicSubnet2
+Outputs:
+  WebServerURL:
+    Description: "URL to access our Tomcat Server"
+    Value: !Join
+      - ""
+      - - "http://"
+        - !GetAtt LoadBalancer.DNSName
+        - ""
+    Export:
+      Name: !Sub "${AWS::StackName}-TomcatURL"

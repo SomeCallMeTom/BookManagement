@@ -16,6 +16,10 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
 
   WebEC2InstanceRole:
     Type: "AWS::IAM::Role"
@@ -61,9 +65,9 @@ Outputs:
 
   WebEC2InstanceProfile:
     Description: "Web Server Security Profile"
-    Value: !Ref WebEC2InstanceProfile
+    Value: !GetAtt WebEC2InstanceProfile.Arn
     Export:
-      Name: !Sub "${AWS::StackName}-WebEC2InstanceProfile"
+      Name: !Sub "${AWS::StackName}-WebEC2InstanceProfileArn"
 
   DBSecurityGroup:
     Description: "DB Security Group ID"

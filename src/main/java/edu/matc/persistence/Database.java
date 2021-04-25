@@ -7,9 +7,9 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
- * Provides access the database
- * Created on 8/31/16.
+ * Provides access the database Created on 8/31/16.
  *
  * @author cmalin
  */
@@ -30,18 +30,17 @@ public class Database {
 
     }
 
+    // loads resources
     private void loadProperties() {
         properties = new Properties();
         try {
             log.info("Starting to load properties");
-            if("dev".equals(System.getenv("Stage"))) {
+            if ("dev".equals(System.getenv("Stage"))) {
                 properties.load(this.getClass().getResourceAsStream("/database-dev.properties"));
-            }
-            else if("staging".equals(System.getenv("Stage"))) {
-                properties.load(this.getClass().getResourceAsStream("/database-staging.properties"));
-            }
-            else{
-                properties.load(this.getClass().getResourceAsStream("/database.properties"));
+            } else if ("qa".equals(System.getenv("Stage"))) {
+                properties.load(this.getClass().getResourceAsStream("/database-qa.properties"));
+            } else {
+                properties.load(this.getClass().getResourceAsStream("/database-dev.properties"));
             }
         } catch (IOException ioe) {
             log.log(Level.SEVERE, "Database.loadProperties()...Cannot load the properties file", ioe);
@@ -58,7 +57,7 @@ public class Database {
      *
      * @return the instance
      */
-// get the only Database object available
+    // get the only Database object available
     public static Database getInstance() {
         return instance;
     }
@@ -90,7 +89,8 @@ public class Database {
 
         String url = properties.getProperty("url");
         log.info("Connecting to DB:" + url);
-        connection = DriverManager.getConnection(url, properties.getProperty("username"),  properties.getProperty("password"));
+        connection = DriverManager.getConnection(url, properties.getProperty("username"),
+                properties.getProperty("password"));
         log.info("Successfully connected to DB");
     }
 
