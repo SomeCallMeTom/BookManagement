@@ -65,9 +65,9 @@ Outputs:
 
   WebEC2InstanceProfile:
     Description: "Web Server Security Profile"
-    Value: !GetAtt WebEC2InstanceProfile.Arn
+    Value: !Ref WebEC2InstanceProfile
     Export:
-      Name: !Sub "${AWS::StackName}-WebEC2InstanceProfileArn"
+      Name: !Sub "${AWS::StackName}-WebEC2InstanceProfile"
 
   DBSecurityGroup:
     Description: "DB Security Group ID"
