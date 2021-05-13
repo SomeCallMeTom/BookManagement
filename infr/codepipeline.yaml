@@ -114,7 +114,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref BuildProject
               RunOrder: 1
-        - Name: Deploy Dev
+        - Name: Deploy-Dev
           Actions:
             - Name: DeployAction
               InputArtifacts:
@@ -128,7 +128,7 @@ Resources:
                 ApplicationName: !Ref ApplicationName
                 DeploymentGroupName: !Ref DevDeploymentGroup
               RunOrder: 1
-        - Name: Deploy QA
+        - Name: Deploy-QA
           Actions:
             - Name: DeployAction
               InputArtifacts:
