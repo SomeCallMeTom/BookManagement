@@ -14,10 +14,14 @@ Parameters:
     Description: CodeDeploy application name
     Type: String
     Default: book-management-cft
-  AppDeploymentGroup:
+  DevDeploymentGroup:
     Description: DG configured in CodeDeploy
     Type: String
-    Default: book-management-dg-cft
+    Default: book-management-dev-dg-cft
+  QADeploymentGroup:
+    Description: DG configured in CodeDeploy
+    Type: String
+    Default: book-management-qa-dg-cft
 Resources:
   CodePipelineArtifactStoreBucket:
     Type: "AWS::S3::Bucket"
@@ -110,7 +114,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref BuildProject
               RunOrder: 1
-        - Name: Deploy
+        - Name: Deploy Dev
           Actions:
             - Name: DeployAction
               InputArtifacts:
@@ -122,7 +126,21 @@ Resources:
                 Provider: CodeDeploy
               Configuration:
                 ApplicationName: !Ref ApplicationName
-                DeploymentGroupName: !Ref AppDeploymentGroup
+                DeploymentGroupName: !Ref DevDeploymentGroup
+              RunOrder: 1
+        - Name: Deploy QA
+          Actions:
+            - Name: DeployAction
+              InputArtifacts:
+                - Name: BuildOutput
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: "1"
+                Provider: CodeDeploy
+              Configuration:
+                ApplicationName: !Ref ApplicationName
+                DeploymentGroupName: !Ref QADeploymentGroup
               RunOrder: 1
       ArtifactStore:
         Type: S3
@@ -216,15 +234,25 @@ Resources:
     Type: "AWS::CodeDeploy::Application"
     Properties:
       ApplicationName: !Ref ApplicationName
-  DeploymentGroup:
+  DeploymentGroupDev:
     Type: "AWS::CodeDeploy::DeploymentGroup"
     Properties:
       ApplicationName: !Ref Application
-      DeploymentGroupName: !Ref AppDeploymentGroup
+      DeploymentGroupName: !Ref DevDeploymentGroup
       Ec2TagFilters:
         - Key: Name
           Type: KEY_AND_VALUE
           Value: "book-management-web-dev"
+      ServiceRoleArn: !Sub "${CodeDeployIAMRole.Arn}"
+  DeploymentGroupQA:
+    Type: "AWS::CodeDeploy::DeploymentGroup"
+    Properties:
+      ApplicationName: !Ref Application
+      DeploymentGroupName: !Ref QADeploymentGroup
+      Ec2TagFilters:
+        - Key: Name
+          Type: KEY_AND_VALUE
+          Value: "book-management-web-qa"
       ServiceRoleArn: !Sub "${CodeDeployIAMRole.Arn}"
   CodeBuildIAMRole:
     Type: "AWS::IAM::Role"
